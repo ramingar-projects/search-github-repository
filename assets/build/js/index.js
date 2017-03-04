@@ -49,6 +49,13 @@ var utils = {
  */
 $(function () {
 
+    var messages = {
+        notResults: 'No results',
+        searching: 'Searching repo...',
+        error: 'Ooops, something wrong happened...',
+        reset: 'Type something in the field above...'
+    };
+
     var setMessage = function setMessage(message) {
         var elementTemplate = '<a href="#" class="collection-item">' + message + '</a>';
         var repoList = $('#repoList');
@@ -61,7 +68,7 @@ $(function () {
         var repoList = $('#repoList');
 
         if (!data.items.length) {
-            setMessage('No results');
+            setMessage(messages.notResults);
             return;
         }
 
@@ -72,19 +79,20 @@ $(function () {
         });
     };
 
-    $('#query').on('keyup', function (e) {
+    $('#query').on('keyup', function () {
         utils.debounce.run(function () {
             var query = $('#query').val();
 
-            if (!query.length) {
+            if (!query.trim().length) {
+                setMessage(messages.reset);
                 return;
             }
 
-            setMessage('Searching repo...');
+            setMessage(messages.searching);
             githubApi$1.searchRepo(query).then(function (data) {
                 setData(data);
             }, function () {
-                setMessage('Ooops, something wrong happened...');
+                setMessage(messages.error);
             });
         }, 1200);
     });
